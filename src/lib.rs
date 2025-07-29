@@ -101,7 +101,12 @@ where
 
                 let body = simd_json::from_slice(&mut body).map_err(|e| {
                     tracing::error!(error = %e, "failed to deserialize request body as json");
-                    MALFORMED_RESPONSE.into_response()
+                    match serde_json::from_slice::<T>(&body) {
+                        Err(serde_err) => {
+                            (StatusCode::BAD_REQUEST, format!("JSON parse error: {}", serde_err)).into_response()
+                        }
+                        _ => MALFORMED_RESPONSE.into_response()
+                    }
                 })?;
 
                 Ok(Self(body))
