@@ -600,7 +600,7 @@ mod test {
                 assert_eq!(response.status(), 400);
                 assert_eq!(
                     response.into_body().collect().await.unwrap().to_bytes(),
-                    "Malformed request body"
+                    "JSON parse error: missing field `message` at line 1 column 12"
                 );
             }
         }
